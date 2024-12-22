@@ -1,0 +1,1 @@
+{"version":3,"file":"static/css/main.c871db97.css","mappings":"AAAA,mBACE,iBACF,CAEA,OACE,cACF","sources":["index.css"],"sourcesContent":["input::placeholder {\r\n  text-align: center;\r\n}\r\n\r\nbutton {\r\n  cursor: pointer;\r\n}\r\n"],"names":[],"sourceRoot":""}
