@@ -91,18 +91,20 @@ export default function Comment(props) {
         {displayModal && (
           <Modal>
             <div style={{ display: "flex", flexDirection: "column" }}>
-              <button
+              <div
                 style={{
-                  width: "5rem",
-                  marginLeft: "70rem",
-                }}
-                onClick={() => {
-                  setReply("");
-                  setDisplayModal(false);
+                  textAlign: "end",
                 }}
               >
-                X
-              </button>
+                <button
+                  onClick={() => {
+                    setReply("");
+                    setDisplayModal(false);
+                  }}
+                >
+                  X
+                </button>
+              </div>
               <form
                 onSubmit={(event) => {
                   event.preventDefault();
@@ -125,7 +127,8 @@ export default function Comment(props) {
                   <button
                     type="submit"
                     style={{ marginTop: "2rem" }}
-                    onClick={() => setTimeout(() => handleCommentReply(), 0)}
+                    onClick={() => handleCommentReply()}
+                    disabled={!(reply && reply?.length > 0)}
                   >
                     REPLY
                   </button>
@@ -137,18 +140,20 @@ export default function Comment(props) {
         {displayEditedTextModal && (
           <Modal>
             <div style={{ display: "flex", flexDirection: "column" }}>
-              <button
+              <div
                 style={{
-                  width: "5rem",
-                  marginLeft: "70rem",
-                }}
-                onClick={() => {
-                  setEditedText(text);
-                  setDisplayEditedTextModal(false);
+                  textAlign: "end",
                 }}
               >
-                X
-              </button>
+                <button
+                  onClick={() => {
+                    setEditedText(text);
+                    setDisplayEditedTextModal(false);
+                  }}
+                >
+                  X
+                </button>
+              </div>
               <form
                 onSubmit={(event) => {
                   event.preventDefault();
@@ -172,6 +177,7 @@ export default function Comment(props) {
                     type="submit"
                     style={{ marginTop: "2rem" }}
                     onClick={() => handleCommentEdit()}
+                    disabled={!(editedText && editedText?.length > 0)}
                   >
                     EDIT
                   </button>
