@@ -8,7 +8,6 @@ export default function Comments(props) {
       {comments.map((comment, index) => {
         const commentIndex =
           previousIndex !== undefined ? previousIndex + "," + index : index;
-        console.log({ commentIndex });
         return <Comment comment={comment} index={commentIndex} />;
       })}
     </div>

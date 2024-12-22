@@ -10,26 +10,18 @@ export default function App() {
   const reducerFunction = (state, action) => {
     switch (action.type) {
       case "add":
-        return {
-          ...state,
-          comments: [{ text: action.value, comments: [] }, ...state.comments],
-        };
-      case "delete":
-        return {
-          ...state,
-          comments: [
-            ...state.comments.filter(
-              (_comment, index) => index !== action.value
-            ),
-          ],
-        };
-      case "addReply":
-        console.log({ action });
         const { text, index } = action;
-        const indexArray = index.toString().split(",");
+        const indexArray =
+          index?.length === 0 ? [] : index.toString().split(",");
         return addCommentAtIndex(state, indexArray, text);
-      case "deleteReply":
+      case "delete":
         return deleteCommentAtIndex(state, action.value.toString().split(","));
+      case "edit":
+        return editCommentAtIndex(
+          state,
+          action.index.toString().split(","),
+          action.text
+        );
       default:
         throw new Error("Unknown action!");
     }
@@ -86,40 +78,37 @@ export default function App() {
     };
   };
 
+  const editCommentAtIndex = (state, indexArray, text) => {
+    const recursiveEdit = (comments, indices) => {
+      if (indices.length === 1) {
+        // Base case: Remove the comment at the last index
+        const targetIndex = parseInt(indices[0], 10);
+        return comments.map((comment, idx) =>
+          idx !== targetIndex ? comment : { ...comment, text }
+        );
+      }
+
+      const [currentIndex, ...remainingIndices] = indices;
+
+      return comments.map((comment, idx) =>
+        idx === parseInt(currentIndex, 10)
+          ? {
+              ...comment,
+              comments: recursiveEdit(comment.comments, remainingIndices),
+            }
+          : comment
+      );
+    };
+
+    return {
+      ...state,
+      comments: recursiveEdit(state.comments, indexArray),
+    };
+  };
+
   const [state, dispatch] = useReducer(reducerFunction, {
-    comments: [
-      {
-        text: "first comment",
-        comments: [
-          {
-            text: "first reply",
-            comments: [
-              {
-                text: "first reply",
-                comments: [],
-              },
-              {
-                text: "second reply",
-                comments: [],
-              },
-            ],
-          },
-          {
-            text: "second reply",
-            comments: [],
-          },
-        ],
-      },
-      {
-        text: "second comment",
-        comments: [],
-      },
-    ],
+    comments: [],
   });
-
-  console.log({ state });
-
-  console.log({ commentInput });
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
@@ -140,7 +129,8 @@ export default function App() {
           onClick={() =>
             dispatch({
               type: "add",
-              value: commentInput,
+              text: commentInput,
+              index: "",
             })
           }
           disabled={!(commentInput && commentInput?.length > 0)}

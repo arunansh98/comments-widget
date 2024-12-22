@@ -16,14 +16,27 @@ export default function Comment(props) {
 
   const [reply, setReply] = useState("");
 
+  const [editedText, setEditedText] = useState("");
+
+  const [displayEditedTextModal, setDisplayEditedTextModal] = useState(false);
+
   function handleCommentReply() {
     dispatch({
-      type: "addReply",
+      type: "add",
       index,
       text: reply,
     });
     setDisplayModal(false);
     setReply("");
+  }
+
+  function handleCommentEdit() {
+    dispatch({
+      type: "edit",
+      index,
+      text: editedText,
+    });
+    setDisplayEditedTextModal(false);
   }
 
   return (
@@ -46,14 +59,20 @@ export default function Comment(props) {
       >
         <h2 key={index}>{text}</h2>
         <div>
-          <button style={{ marginRight: "0.5rem" }}>
+          <button
+            style={{ marginRight: "0.5rem" }}
+            onClick={() => {
+              setEditedText(text);
+              setDisplayEditedTextModal(true);
+            }}
+          >
             <h3>Edit</h3>
           </button>
           <button
             style={{ marginRight: "0.5rem" }}
             onClick={() =>
               dispatch({
-                type: "deleteReply",
+                type: "delete",
                 value: index,
               })
             }
@@ -84,27 +103,80 @@ export default function Comment(props) {
               >
                 X
               </button>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginTop: "10rem",
-                  flexDirection: "column",
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
                 }}
               >
-                <TextInput
-                  placeholder="Enter reply"
-                  value={reply}
-                  onChange={(event) => setReply(event.target.value)}
-                />
-                <button
-                  style={{ marginTop: "2rem" }}
-                  onClick={() => handleCommentReply()}
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginTop: "10rem",
+                    flexDirection: "column",
+                  }}
                 >
-                  REPLY
-                </button>
-              </div>
+                  <TextInput
+                    placeholder="Enter reply"
+                    value={reply}
+                    onChange={(event) => setReply(event.target.value)}
+                  />
+                  <button
+                    type="submit"
+                    style={{ marginTop: "2rem" }}
+                    onClick={() => setTimeout(() => handleCommentReply(), 0)}
+                  >
+                    REPLY
+                  </button>
+                </div>
+              </form>
+            </div>
+          </Modal>
+        )}
+        {displayEditedTextModal && (
+          <Modal>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <button
+                style={{
+                  width: "5rem",
+                  marginLeft: "70rem",
+                }}
+                onClick={() => {
+                  setEditedText(text);
+                  setDisplayEditedTextModal(false);
+                }}
+              >
+                X
+              </button>
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginTop: "10rem",
+                    flexDirection: "column",
+                  }}
+                >
+                  <TextInput
+                    placeholder="Enter text to be edited"
+                    value={editedText}
+                    onChange={(event) => setEditedText(event.target.value)}
+                  />
+                  <button
+                    type="submit"
+                    style={{ marginTop: "2rem" }}
+                    onClick={() => handleCommentEdit()}
+                  >
+                    EDIT
+                  </button>
+                </div>
+              </form>
             </div>
           </Modal>
         )}
