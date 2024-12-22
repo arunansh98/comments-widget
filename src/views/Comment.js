@@ -1,52 +1,46 @@
-import { useContext, useState } from "react";
-import { CommentsContext } from "../App";
 import Comments from "./Comments";
-
 import Modal from "../components/Modal";
 import TextInput from "../components/TextInput";
+import useModal from "../hooks/useModal";
 
 export default function Comment(props) {
   const { comment, index } = props;
 
   const { text, comments } = comment;
 
-  const { dispatch } = useContext(CommentsContext);
+  const useReplyModal = useModal();
 
-  const [displayModal, setDisplayModal] = useState(false);
+  const useEditModal = useModal();
 
-  const [reply, setReply] = useState("");
-
-  const [editedText, setEditedText] = useState("");
-
-  const [displayEditedTextModal, setDisplayEditedTextModal] = useState(false);
-
-  const [displayDeleteModal, setDisplayDeleteModal] = useState(false);
+  const useDeleteModal = useModal(false);
 
   function handleCommentReply() {
-    dispatch({
+    const { handleDispatch, text } = useReplyModal;
+    const dispatchObject = {
       type: "add",
       index,
-      text: reply,
-    });
-    setDisplayModal(false);
-    setReply("");
+      text,
+    };
+    handleDispatch(dispatchObject, "", false);
   }
 
   function handleCommentEdit() {
-    dispatch({
+    const { handleDispatch, text } = useEditModal;
+    const dispatchObject = {
       type: "edit",
       index,
-      text: editedText,
-    });
-    setDisplayEditedTextModal(false);
+      text,
+    };
+    handleDispatch(dispatchObject, text, false);
   }
 
   function handleCommentDelete() {
-    dispatch({
+    const { handleDispatch, text } = useDeleteModal;
+    const dispatchObject = {
       type: "delete",
       value: index,
-    });
-    setDisplayDeleteModal(false);
+    };
+    handleDispatch(dispatchObject, "", false);
   }
 
   return (
@@ -72,19 +66,19 @@ export default function Comment(props) {
           <button
             style={{ marginRight: "0.5rem" }}
             onClick={() => {
-              setEditedText(text);
-              setDisplayEditedTextModal(true);
+              useEditModal.setText(text);
+              useEditModal.setDisplayModal(true);
             }}
           >
             <h3>Edit</h3>
           </button>
           <button
             style={{ marginRight: "0.5rem" }}
-            onClick={() => setDisplayDeleteModal(true)}
+            onClick={() => useDeleteModal.setDisplayModal(true)}
           >
             <h3>Delete</h3>
           </button>
-          <button onClick={() => setDisplayModal(true)}>
+          <button onClick={() => useReplyModal.setDisplayModal(true)}>
             <h3>Reply</h3>
           </button>
         </div>
@@ -93,7 +87,7 @@ export default function Comment(props) {
         <Comments comments={comments} previousIndex={index} />
       )}
       <>
-        {displayModal && (
+        {useReplyModal.displayModal && (
           <Modal>
             <div style={{ display: "flex", flexDirection: "column" }}>
               <div
@@ -103,8 +97,8 @@ export default function Comment(props) {
               >
                 <button
                   onClick={() => {
-                    setReply("");
-                    setDisplayModal(false);
+                    useReplyModal.setText("");
+                    useReplyModal.setDisplayModal(false);
                   }}
                 >
                   X
@@ -126,14 +120,18 @@ export default function Comment(props) {
                 >
                   <TextInput
                     placeholder="Enter reply"
-                    value={reply}
-                    onChange={(event) => setReply(event.target.value)}
+                    value={useReplyModal.text}
+                    onChange={(event) =>
+                      useReplyModal.setText(event.target.value)
+                    }
                   />
                   <button
                     type="submit"
                     style={{ marginTop: "2rem" }}
                     onClick={() => handleCommentReply()}
-                    disabled={!(reply && reply?.length > 0)}
+                    disabled={
+                      !(useReplyModal.text && useReplyModal.text?.length > 0)
+                    }
                   >
                     REPLY
                   </button>
@@ -142,7 +140,7 @@ export default function Comment(props) {
             </div>
           </Modal>
         )}
-        {displayEditedTextModal && (
+        {useEditModal?.displayModal && (
           <Modal>
             <div style={{ display: "flex", flexDirection: "column" }}>
               <div
@@ -152,8 +150,8 @@ export default function Comment(props) {
               >
                 <button
                   onClick={() => {
-                    setEditedText(text);
-                    setDisplayEditedTextModal(false);
+                    useEditModal.setText(text);
+                    useEditModal.setDisplayModal(false);
                   }}
                 >
                   X
@@ -175,14 +173,18 @@ export default function Comment(props) {
                 >
                   <TextInput
                     placeholder="Enter text to be edited"
-                    value={editedText}
-                    onChange={(event) => setEditedText(event.target.value)}
+                    value={useEditModal.text}
+                    onChange={(event) =>
+                      useEditModal.setText(event.target.value)
+                    }
                   />
                   <button
                     type="submit"
                     style={{ marginTop: "2rem" }}
                     onClick={() => handleCommentEdit()}
-                    disabled={!(editedText && editedText?.length > 0)}
+                    disabled={
+                      !(useEditModal.text && useEditModal.text?.length > 0)
+                    }
                   >
                     EDIT
                   </button>
@@ -191,7 +193,7 @@ export default function Comment(props) {
             </div>
           </Modal>
         )}
-        {displayDeleteModal && (
+        {useDeleteModal?.displayModal && (
           <Modal>
             <div style={{ display: "flex", flexDirection: "column" }}>
               <div
@@ -201,7 +203,7 @@ export default function Comment(props) {
               >
                 <button
                   onClick={() => {
-                    setDisplayDeleteModal(false);
+                    useDeleteModal?.setDisplayModal(false);
                   }}
                 >
                   X
@@ -241,7 +243,7 @@ export default function Comment(props) {
                   </button>
                   <button
                     style={{ marginTop: "2rem" }}
-                    onClick={() => setDisplayDeleteModal(false)}
+                    onClick={() => useDeleteModal.setDisplayModal(false)}
                   >
                     NO
                   </button>
