@@ -125,6 +125,9 @@ export default function App() {
           onChange={(event) => setCommentInput(event.target.value)}
         />
         <button
+          style={{
+            marginLeft: "1rem",
+          }}
           type="submit"
           onClick={() =>
             dispatch({
@@ -139,7 +142,9 @@ export default function App() {
         </button>
       </form>
       <div>
-        <Comments comments={state.comments} />
+        {state?.comments && state?.comments?.length > 0 && (
+          <Comments comments={state.comments} />
+        )}
       </div>
     </CommentsContext.Provider>
   );

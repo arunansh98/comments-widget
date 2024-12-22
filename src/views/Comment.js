@@ -20,6 +20,8 @@ export default function Comment(props) {
 
   const [displayEditedTextModal, setDisplayEditedTextModal] = useState(false);
 
+  const [displayDeleteModal, setDisplayDeleteModal] = useState(false);
+
   function handleCommentReply() {
     dispatch({
       type: "add",
@@ -37,6 +39,14 @@ export default function Comment(props) {
       text: editedText,
     });
     setDisplayEditedTextModal(false);
+  }
+
+  function handleCommentDelete() {
+    dispatch({
+      type: "delete",
+      value: index,
+    });
+    setDisplayDeleteModal(false);
   }
 
   return (
@@ -70,12 +80,7 @@ export default function Comment(props) {
           </button>
           <button
             style={{ marginRight: "0.5rem" }}
-            onClick={() =>
-              dispatch({
-                type: "delete",
-                value: index,
-              })
-            }
+            onClick={() => setDisplayDeleteModal(true)}
           >
             <h3>Delete</h3>
           </button>
@@ -183,6 +188,65 @@ export default function Comment(props) {
                   </button>
                 </div>
               </form>
+            </div>
+          </Modal>
+        )}
+        {displayDeleteModal && (
+          <Modal>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <div
+                style={{
+                  textAlign: "end",
+                }}
+              >
+                <button
+                  onClick={() => {
+                    setDisplayDeleteModal(false);
+                  }}
+                >
+                  X
+                </button>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginTop: "10rem",
+                  flexDirection: "column",
+                }}
+              >
+                <div
+                  style={{
+                    fontWeight: "600",
+                  }}
+                >
+                  Are you sure you want to delete ?
+                </div>
+                <div>
+                  (Warning: All the nested replies will also be deleted !)
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
+                  <button
+                    style={{ marginTop: "2rem", marginRight: "1rem" }}
+                    onClick={() => handleCommentDelete()}
+                  >
+                    YES
+                  </button>
+                  <button
+                    style={{ marginTop: "2rem" }}
+                    onClick={() => setDisplayDeleteModal(false)}
+                  >
+                    NO
+                  </button>
+                </div>
+              </div>
             </div>
           </Modal>
         )}
