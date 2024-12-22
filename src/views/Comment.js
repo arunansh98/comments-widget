@@ -35,7 +35,7 @@ export default function Comment(props) {
   }
 
   function handleCommentDelete() {
-    const { handleDispatch, text } = useDeleteModal;
+    const { handleDispatch } = useDeleteModal;
     const dispatchObject = {
       type: "delete",
       value: index,
